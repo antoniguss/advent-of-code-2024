@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello World!")
 
 	fileName := "./input.txt"
 	f, err := os.Open(fileName)
