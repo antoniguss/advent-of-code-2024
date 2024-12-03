@@ -42,10 +42,39 @@ func main() {
 
 	fmt.Printf("Number of safe: %d\n", safe)
 
+	//--- Part 2 ---
+
+	safe = 0
+	for _, report := range reports {
+		if processReportWithDampener(report) {
+			safe++
+		}
+	}
+	fmt.Printf("Number of safe with dampener used: %d\n", safe)
+	err = f.Close()
+	check(err)
+
+}
+
+func processReportWithDampener(report []uint) bool {
+	if processReport(report) {
+		return true
+	}
+	// Else try removing elements to see if it fixes it
+	for i := range len(report) {
+		var newReport []uint
+		newReport = append(newReport, report[:i]...)
+		newReport = append(newReport, report[i+1:]...)
+
+		if processReport(newReport) {
+			return true
+		}
+	}
+	return false
+
 }
 
 func processReport(report []uint) bool {
-
 	ascending := report[1] > report[0]
 
 	if ascending {
