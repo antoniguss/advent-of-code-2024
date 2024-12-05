@@ -11,7 +11,8 @@ func main() {
 
 	file, err := os.Open("input.txt")
 	check(err)
-	defer file.Close()
+
+	//--- Part 1 ---
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -20,6 +21,14 @@ func main() {
 		fmt.Println(line)
 	}
 
+	//--- Part 2 ---
+
+
+
+
+	//--- Cleanup ---
+	err := file.Close()
+	check(err)
 
 }
 
