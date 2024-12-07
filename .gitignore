@@ -30,3 +30,6 @@ Goland
 /dataSources/
 
 /dataSources.local.xml
+
+# Puzzle inputs
+*.txt
