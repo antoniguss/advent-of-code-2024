@@ -32,6 +32,7 @@ func checkOperation(input []int, result int) bool {
 }
 
 func checkOperationWithConcat(input []int, result int) bool {
+
 	if len(input) == 1 {
 		return input[0] == result
 	}

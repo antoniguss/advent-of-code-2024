@@ -9,6 +9,7 @@ fi
 
 # Get the current day of the month
 DAY=$(date +%d)
+DAY=$(echo $DAY | sed 's/^0//')
 
 # Format day to be two digits (01, 02, ..., 25)
 DAY_FORMATTED=$(printf "%d" $DAY)
