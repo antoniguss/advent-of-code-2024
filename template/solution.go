@@ -23,11 +23,8 @@ func main() {
 
 	//--- Part 2 ---
 
-
-
-
 	//--- Cleanup ---
-	err := file.Close()
+	err = file.Close()
 	check(err)
 
 }

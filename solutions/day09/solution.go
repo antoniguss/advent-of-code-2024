@@ -41,6 +41,10 @@ func main() {
 	disc1 := part1(disc)
 	// printDisc(disc1)
 	fmt.Printf("Part1: %v\n", calcChecksum(disc1))
+	boolean := true
+	if boolean == true {
+		fmt.Println("HAHHA")
+	}
 
 	//--- Part 2 ---
 	printDisc(disc)
