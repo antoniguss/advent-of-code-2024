@@ -41,13 +41,55 @@ func main() {
 
 	}
 	inputList.Print()
-	sum := part1(inputList, 75)
+	sum := part1(inputList, 25)
 	fmt.Printf("Part 1: %d\n", sum)
 	//--- Part 2 ---
 
+	sum2 := part2(inputList, 50)
+	fmt.Printf("Part 2: %d\n", sum2)
 	//--- Cleanup ---
 	err = file.Close()
 	check(err)
+
+}
+
+func part2(inputList util.LinkedList, iterations int) int {
+	//IDEA: Use map to store count of differnt values
+	curr := inputList.Head
+	counts := make(map[int]int)
+	for curr != nil {
+		counts[curr.Value]++
+		curr = curr.Next
+	}
+
+	for range iterations {
+		newMap := make(map[int]int)
+
+		for value, count := range counts {
+
+			length := intLength(value)
+			if value == 0 {
+				newMap[1] += count
+			} else if length%2 == 0 {
+				left := value / int(math.Pow10(length/2))
+				right := value - left*int(math.Pow10(length/2))
+
+				newMap[left] += count
+				newMap[right] += count
+			} else {
+				newMap[value*2024] += count
+			}
+		}
+		counts = newMap
+
+	}
+
+	sum := 0
+	for _, count := range counts {
+		sum += count
+	}
+
+	return sum
 
 }
 
@@ -74,9 +116,6 @@ func part1(inputList util.LinkedList, iterations int) int {
 				curr.Next = newNode
 				curr = nextNode
 			} else {
-				//If even number of digits, replace by two stones (leftSide) (rightSide)
-
-				//If none, multiply value by 2024
 				curr.Value = curr.Value * 2024
 				curr = curr.Next
 			}
@@ -109,3 +148,42 @@ func check(e error) {
 		panic(e)
 	}
 }
+
+//------------Thought recursion migth be smart but no :(--------------------
+// func part2(inputList util.LinkedList, maxDepth int) int {
+// 	curr := inputList.Head length := 0 for curr != nil {
+// 		length++
+// 		curr = curr.Next
+// 	}
+//
+// 	sum := 0
+// 	curr = inputList.Head
+// 	count := 0
+// 	for curr != nil {
+// 		sum += recurse(curr.Value, maxDepth)
+// 		count++
+// 		fmt.Printf("(%d/%d)\n", count, length)
+//
+// 		curr = curr.Next
+// 	}
+//
+// 	return sum
+// }
+
+// func recurse(value int, remainDepth int) int {
+// 	if remainDepth == 0 {
+// 		return 1
+// 	}
+//
+// 	length := intLength(value)
+// 	if value == 0 {
+// 		return recurse(1, remainDepth-1)
+// 	} else if length%2 == 0 {
+// 		left := value / int(math.Pow10(length/2))
+// 		right := value - left*int(math.Pow10(length/2))
+//
+// 		return recurse(left, remainDepth-1) + recurse(right, remainDepth-1)
+// 	} else {
+// 		return recurse(value*2024, remainDepth-1)
+// 	}
+// }
