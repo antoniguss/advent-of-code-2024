@@ -58,8 +58,8 @@ func main() {
 
 }
 
-func (r *robot) move(cols, rows int) {
-	newPos := r.p.Add(r.v)
+func (r *robot) move(cols, rows, moves int) {
+	newPos := r.p.Add(r.v.Scale(moves))
 	newPos.X = mod(newPos.X, cols)
 	newPos.Y = mod(newPos.Y, rows)
 
@@ -69,13 +69,6 @@ func (r *robot) move(cols, rows int) {
 
 func mod(a, b int) int {
 	return (a%b + b) % b
-
-}
-
-func (r *robot) moveN(moves, cols, rows int) {
-	for range moves {
-		r.move(cols, rows)
-	}
 
 }
 
@@ -99,7 +92,7 @@ func part1(robots []robot, cols, rows, moves int) (score int) {
 	// botEnd := rows - 1
 
 	for _, robot := range robots {
-		robot.moveN(moves, cols, rows)
+		robot.move(cols, rows, moves)
 
 		if robot.p.X <= leftEnd {
 			if robot.p.Y <= topEnd {
@@ -135,7 +128,7 @@ func part2(robots []robot, cols, rows, moves int) (score int) {
 
 	for i := range moves {
 		for j := range robots {
-			robots[j].move(cols, rows)
+			robots[j].move(cols, rows, 1)
 		}
 		fmt.Println(i)
 		if i >= 7500 {
