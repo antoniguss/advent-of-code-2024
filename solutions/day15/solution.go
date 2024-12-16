@@ -27,20 +27,34 @@ func main() {
 	rows := 0
 	cols := len(line)
 	objects := make(map[util.Vector]object, 0)
+	objects2 := make(map[util.Vector]object, 0)
 	var robot object
+	var robot2 object
+
 	for len(line) != 0 && line[0] == '#' {
 		// Process each line of input
 		for col, c := range line {
 			pos := util.Vector{X: col, Y: rows}
 
+			pos2 := util.Vector{X: col * 2, Y: rows}
 			switch c {
 			case '#':
 				objects[pos] = object{pos: pos, isMovable: false, isRobot: false}
+
+				object2 := object{pos: pos2, isMovable: false, isRobot: false}
+				objects2[pos2] = object2
+				objects2[pos2.Add(util.Vector{X: 1, Y: 0})] = object2
+
 			case 'O':
 				objects[pos] = object{pos: pos, isMovable: true, isRobot: false}
+				object2 := object{pos: pos2, isMovable: true, isRobot: false}
+				objects2[pos2] = object2
+				objects2[pos2.Add(util.Vector{X: 1, Y: 0})] = object2
 			case '@':
 				robot = object{pos: pos, isMovable: true, isRobot: true}
+				robot2 = object{pos: pos2, isMovable: true, isRobot: true}
 				objects[pos] = robot
+				objects2[pos2] = robot2
 			}
 
 		}
@@ -70,6 +84,8 @@ func main() {
 	fmt.Printf("Part1: %d\n", sum1)
 
 	//--- Part 2 ---
+	sum2 := part2(objects2, instructions, robot2, rows, cols*2)
+	fmt.Printf("Part2: %d\n", sum2)
 
 	//--- Cleanup ---
 	err = file.Close()
@@ -79,7 +95,7 @@ func main() {
 
 func part1(objects map[util.Vector]object, instruction []util.Vector, robot object, rows, cols int) (sum int) {
 	// fmt.Println("Initial state:")
-	// printObjects(objects, rows, cols)
+	//printObjects(objects, rows, cols)
 	for _, instruction := range instruction {
 		// switch {
 		// case instruction.X == 0 && instruction.Y == -1:
@@ -101,6 +117,37 @@ func part1(objects map[util.Vector]object, instruction []util.Vector, robot obje
 
 		if object.isMovable && !object.isRobot {
 			sum += 100*object.pos.Y + object.pos.X
+		}
+	}
+	return sum
+}
+func part2(objects map[util.Vector]object, instruction []util.Vector, robot object, rows, cols int) (sum int) {
+	// fmt.Println("Initial state:")
+	//printObjects(objects, rows, cols)
+	for _, instruction := range instruction {
+		//switch {
+		//case instruction.X == 0 && instruction.Y == -1:
+		//	fmt.Println("Move ^")
+		//case instruction.X == 1 && instruction.Y == 0:
+		//	fmt.Println("Move >")
+		//case instruction.X == 0 && instruction.Y == 1:
+		//	fmt.Println("Move v")
+		//case instruction.X == -1 && instruction.Y == 0:
+		//	fmt.Println("Move <")
+		//}
+		robot.move2(objects, instruction)
+		//printObjects(objects, rows, cols)
+
+	}
+
+	checked := map[object]struct{}{}
+	for _, object := range objects {
+
+		if object.isMovable && !object.isRobot {
+			if _, has := checked[object]; !has {
+				sum += 100*object.pos.Y + object.pos.X
+				checked[object] = struct{}{}
+			}
 		}
 	}
 	return sum
@@ -156,6 +203,123 @@ func (o *object) move(objects map[util.Vector]object, instruction util.Vector) b
 	delete(objects, oldPos)
 
 	return true
+}
+
+func canMove(position util.Vector, objects map[util.Vector]object, instruction util.Vector) bool {
+
+	o, has := objects[position]
+	if !has {
+		return true
+	}
+
+	if !o.isMovable {
+		return false
+	}
+
+	nextPos := o.pos.Add(instruction)
+	//If move is horizontal
+	if instruction.Y == 0 {
+
+		if o.isRobot {
+			return canMove(nextPos, objects, instruction)
+		}
+
+		if instruction.X == 1 {
+			nextPos = nextPos.Add(instruction)
+		}
+
+		return canMove(nextPos, objects, instruction)
+	}
+	//If vertical
+	if o.isRobot {
+		return canMove(nextPos, objects, instruction)
+	}
+
+	nextPosRight := nextPos.Add(util.Vector{X: 1, Y: 0})
+	return canMove(nextPos, objects, instruction) && canMove(nextPosRight, objects, instruction)
+}
+
+func (o *object) move2(objects map[util.Vector]object, instruction util.Vector) {
+
+	if !o.isMovable || !canMove(o.pos, objects, instruction) {
+		fmt.Println("couldn't move")
+		return
+	}
+	nextPos := o.pos.Add(instruction)
+
+	if o.isRobot {
+		if inFront, has := objects[nextPos]; has {
+			inFront.move2(objects, instruction)
+		}
+
+		oldPos := o.pos
+		o.pos = nextPos
+		objects[o.pos] = *o
+		delete(objects, oldPos)
+		return
+
+	}
+
+	//If horizontal
+	if instruction.Y == 0 {
+		if instruction.X == -1 {
+			if inFront, has := objects[nextPos]; has {
+				inFront.move2(objects, instruction)
+			}
+
+			oldPos := o.pos
+			o.pos = nextPos
+			objects[o.pos] = *o
+			objects[oldPos] = *o
+			delete(objects, oldPos.Add(util.Vector{X: 1, Y: 0}))
+			return
+
+		} else {
+			nextNextPos := nextPos.Add(instruction)
+			if inFront, has := objects[nextNextPos]; has {
+				inFront.move2(objects, instruction)
+			}
+
+			oldPos := o.pos
+			o.pos = nextPos
+			objects[o.pos] = *o
+			objects[nextNextPos] = *o
+			delete(objects, oldPos)
+			return
+		}
+	}
+
+	nextPosRight := nextPos.Add(util.Vector{X: 1, Y: 0})
+	inFront, has := objects[nextPos]
+	inFrontRight, hasRight := objects[nextPosRight]
+
+	if has && hasRight {
+		if inFront == inFrontRight {
+			inFront.move2(objects, instruction)
+		} else {
+			inFront.move2(objects, instruction)
+			inFrontRight.move2(objects, instruction)
+		}
+	} else {
+
+		if has {
+			inFront.move2(objects, instruction)
+		}
+
+		if hasRight {
+			inFrontRight.move2(objects, instruction)
+		}
+	}
+
+	oldPos := o.pos
+	o.pos = nextPos
+	objects[nextPos] = *o
+	objects[nextPosRight] = *o
+	delete(objects, oldPos)
+	delete(objects, oldPos.Add(util.Vector{X: 1, Y: 0}))
+
+	return
+
 }
 
 func check(e error) {
