@@ -29,3 +29,7 @@ func (v1 Vector) Scale(scalar int) Vector {
 func (v Vector) Rotate90Right() Vector {
 	return Vector{X: -v.Y, Y: v.X}
 }
+
+func (v Vector) Rotate90Left() Vector {
+	return Vector{X: v.Y, Y: -v.X}
+}
