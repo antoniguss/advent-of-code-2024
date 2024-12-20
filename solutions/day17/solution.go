@@ -184,16 +184,36 @@ func (s *state) part1() (outputs []int) {
 
 func part2(prevA int, instructions []int) (value int) {
 	//Brutforcing probably not worth it, will do manually
+	solution, _ := find(instructions, 0)
 
-	for k := 0; k < 2; k++ {
-		for i := 0; i < 8; i++ {
-			newState := state{regA: i + 8*k, instructions: instructions}
-			fmt.Printf("newState.part1() for %d: %v\n", i+8*k, newState.part1())
+	return solution
+}
 
-		}
+func find(instructions []int, ans int) (sub int, found bool) {
+
+	if len(instructions) == 0 {
+		return ans, true
 	}
 
-	return value
+	for i := 0; i < 8; i++ {
+		b := i
+		a := ans<<3 + b
+
+		b = b ^ 2
+		c := a >> b
+		b = b ^ c
+		b = b ^ 3
+		if b%8 == instructions[len(instructions)-1] {
+			sub, found := find(instructions[:len(instructions)-1], a)
+			if !found {
+				continue
+			}
+			return sub, true
+		}
+
+	}
+	return -1, false
+
 }
 func (s *state) compare(expected []int) bool {
 
