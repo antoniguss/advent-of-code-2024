@@ -33,3 +33,19 @@ func (v Vector) Rotate90Right() Vector {
 func (v Vector) Rotate90Left() Vector {
 	return Vector{X: v.Y, Y: -v.X}
 }
+
+func (v Vector) Above(d int) Vector {
+	return v.Add(Vector{X: 0, Y: d})
+}
+
+func (v Vector) Below(d int) Vector {
+	return v.Add(Vector{X: 0, Y: -d})
+}
+
+func (v Vector) Left(d int) Vector {
+	return v.Add(Vector{X: -d, Y: 0})
+}
+
+func (v Vector) Right(d int) Vector {
+	return v.Add(Vector{X: d, Y: 0})
+}
