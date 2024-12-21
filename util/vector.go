@@ -6,6 +6,10 @@ type Vector struct {
 	Y int
 }
 
+func (v Vector) Get() (X, Y int) {
+	return v.X, v.Y
+}
+
 // withinBounds checks if the Vector is within the grid boundaries
 func (v Vector) WithinBounds(limX, limY int) bool {
 	return v.X >= 0 && v.X < limX && v.Y >= 0 && v.Y < limY

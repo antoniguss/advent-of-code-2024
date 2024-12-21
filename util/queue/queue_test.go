@@ -5,11 +5,11 @@ import "testing"
 func TestEnqueueAndDequeue(t *testing.T) {
 	q := &Queue{}
 
-	q.enqueue("A")
-	q.enqueue("B")
+	q.Enqueue("A")
+	q.Enqueue("B")
 
-	actual1 := q.dequeue()
-	actual2 := q.dequeue()
+	actual1 := q.Dequeue()
+	actual2 := q.Dequeue()
 
 	if actual1 != "A" {
 		t.Error("expected first element removed to be A")
