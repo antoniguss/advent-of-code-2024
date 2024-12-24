@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+const (
+	inputFile = "input.txt"
+)
+
 func main() {
 	fmt.Println("Advent of Code - Day 20") // Placeholder for day number
 
@@ -28,7 +32,7 @@ func main() {
 }
 
 func getInput() (util.Vector, util.Vector, [][]bool) {
-	file, err := os.Open("input.txt")
+	file, err := os.Open(inputFile)
 	check(err)
 	scanner := bufio.NewScanner(file)
 
