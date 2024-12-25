@@ -33,10 +33,109 @@ func main() {
 	fmt.Printf("Part1: %d\n", res1)
 
 	//--- Part 2 ---
+	res2 := part2(codes)
+	fmt.Printf("Part2: %d\n", res2)
 
 	//--- Cleanup ---
 	err = file.Close()
 	check(err)
+
+}
+
+func part2(codes []string) (result int) {
+	keypad := [][]rune{
+		{'7', '8', '9'},
+		{'4', '5', '6'},
+		{'1', '2', '3'},
+		{'_', '0', 'A'},
+	}
+	keypadSeq := getSequences(keypad)
+
+	context := NewContext()
+	depth := 26
+	for _, code := range codes {
+		robot := generatePossibleStrings(code, keypadSeq)
+		optimal := -1
+		for _, seq := range robot {
+			seq = "A" + seq
+			length := 0
+			for i := 0; i < len(seq)-1; i++ {
+				length += context.computeLen(depthPair{
+					pair{rune(seq[i]), rune(seq[i+1])},
+					depth - 1,
+				})
+			}
+
+			if length < optimal || optimal == -1 {
+				optimal = length
+			}
+
+		}
+		//fmt.Printf("code: %s, optimal: %v\n", code[1:], optimal)
+		codeNum, _ := strconv.Atoi(code[1 : len(code)-1])
+		result += optimal * codeNum
+
+	}
+	return result
+}
+
+func (ctx *context) computeLen(input depthPair) int {
+	if ret, has := ctx.cache[input]; has {
+		return ret
+	}
+	if input.depth == 1 {
+		return ctx.lens[input.pair]
+	}
+	optimal := -1
+	for _, sequence := range ctx.seq[input.pair] {
+		length := 0
+		sequence = "A" + sequence
+		for i := 0; i < len(sequence)-1; i++ {
+			length += ctx.computeLen(depthPair{
+				pair{
+					rune(sequence[i]),
+					rune(sequence[i+1]),
+				},
+				input.depth - 1,
+			})
+
+		}
+		if length < optimal || optimal == -1 {
+			optimal = length
+		}
+
+	}
+
+	ctx.cache[input] = optimal
+
+	return optimal
+}
+
+type context struct {
+	dirpad [][]rune
+	seq    map[pair][]string
+	lens   map[pair]int
+	cache  map[depthPair]int
+}
+
+type depthPair struct {
+	pair
+	depth int
+}
+
+func NewContext() context {
+	dirpad := [][]rune{
+		{'_', '^', 'A'},
+		{'<', 'v', '>'},
+	}
+	seq := getSequences(dirpad)
+	cache := make(map[depthPair]int)
+	lens := make(map[pair]int)
+	for k, v := range seq {
+		lens[k] = len(v[0])
+
+	}
+	return context{dirpad: dirpad, seq: seq, cache: cache, lens: lens}
 
 }
 
