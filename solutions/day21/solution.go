@@ -11,10 +11,15 @@ import (
 )
 
 const (
-	inputFile = "test1.txt"
+	inputFile = "input.txt"
 )
 
 func main() {
+
+	test := [][]string{
+		{"A"}, {"A", "B", "C"}, {"A", "B"},
+	}
+	fmt.Printf("product(test): %v\n", product(test))
 	fmt.Println("Advent of Code - Day 21") // Placeholder for day number
 
 	file, err := os.Open(inputFile)
@@ -50,51 +55,90 @@ func part1(codes []string) (result int) {
 
 	keypadSeq := getSequences(keypad)
 
-	for k, v := range keypadSeq {
-		fmt.Printf("(%s -> %s): %+v\n", string(k.from), string(k.to), v)
-	}
+	// for k, v := range keypadSeq {
+	// 	fmt.Printf("(%s -> %s): %+v\n", string(k.from), string(k.to), v)
+	// }
 	dirpad := [][]rune{
 		{'_', '^', 'A'},
 		{'<', 'v', '>'},
 	}
 
 	dirpadSeq := getSequences(dirpad)
-	for k, v := range dirpadSeq {
-		fmt.Printf("(%s -> %s): %+v\n", string(k.from), string(k.to), v)
-	}
+	_ = dirpadSeq
 
 	for _, code := range codes {
-		moveSeq1 := "A"
-		for i := 0; i < len(code)-1; i++ {
-			from := rune(code[i])
-			to := rune(code[i+1])
-			moves := keypadSeq[pair{from: from, to: to}]
-			moveSeq1 += moves[0]
+		// fmt.Printf("Code: %s\n", code[1:])
+		robot1 := generatePossibleStrings(code, keypadSeq)
+
+		possible_robot2 := make([]string, 0)
+		for _, seq := range robot1 {
+			possible_robot2 = append(possible_robot2, generatePossibleStrings("A"+seq, dirpadSeq)...)
 		}
-		moveSeq2 := "A"
-		for i := 0; i < len(moveSeq1)-1; i++ {
-			from := rune(moveSeq1[i])
-			to := rune(moveSeq1[i+1])
-			moves := dirpadSeq[pair{from: from, to: to}]
-			moveSeq2 += moves[0]
+		minlen := -1
+		var robot2 []string
+		for _, seq := range possible_robot2 {
+			if len(seq) < minlen || minlen == -1 {
+				robot2 = make([]string, 0)
+				minlen = len(seq)
+			}
+
+			if len(seq) == minlen {
+				robot2 = append(robot2, seq)
+				continue
+			}
 		}
-		moveSeq3 := "A"
-		for i := 0; i < len(moveSeq2)-1; i++ {
-			from := rune(moveSeq2[i])
-			to := rune(moveSeq2[i+1])
-			moves := dirpadSeq[pair{from: from, to: to}]
-			moveSeq3 += moves[0]
+
+		possible_robot3 := make([]string, 0)
+		for _, seq := range robot2 {
+			possible_robot3 = append(possible_robot3, generatePossibleStrings("A"+seq, dirpadSeq)...)
 		}
-		fmt.Println(moveSeq3[1:])
-		fmt.Println(moveSeq2[1:])
-		fmt.Println(moveSeq1[1:])
-		fmt.Println(code[1:])
+		minlen = -1
+		for _, seq := range possible_robot3 {
+			if len(seq) < minlen || minlen == -1 {
+				minlen = len(seq)
+			}
+		}
 		codeNum, _ := strconv.Atoi(code[1 : len(code)-1])
-		fmt.Println(len(moveSeq3)-1, codeNum)
-		result += (len(moveSeq3) - 1) * codeNum
+		result += minlen * codeNum
 	}
 
 	return result
+}
+
+func generatePossibleStrings(line string, seq map[pair][]string) []string {
+	options := make([][]string, 0)
+
+	for i := 0; i < len(line)-1; i++ {
+		from := rune(line[i])
+		to := rune(line[i+1])
+		moves := seq[pair{from: from, to: to}]
+		options = append(options, moves)
+	}
+
+	return product(options)
+}
+
+func product(list [][]string) []string {
+	if len(list) == 0 {
+		return []string{""}
+	}
+
+	// Initialize the output with an empty string
+	output := []string{""}
+
+	// Iterate over each slice in the input list
+	for _, opts := range list {
+		var temp []string
+		// Generate new combinations by appending each option to existing combinations
+		for _, prefix := range output {
+			for _, opt := range opts {
+				temp = append(temp, prefix+opt)
+			}
+		}
+		output = temp
+	}
+
+	return output
 }
 
 func getSequences(keyPad [][]rune) map[pair][]string {
