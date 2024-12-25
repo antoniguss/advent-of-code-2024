@@ -16,10 +16,6 @@ const (
 
 func main() {
 
-	test := [][]string{
-		{"A"}, {"A", "B", "C"}, {"A", "B"},
-	}
-	fmt.Printf("product(test): %v\n", product(test))
 	fmt.Println("Advent of Code - Day 21") // Placeholder for day number
 
 	file, err := os.Open(inputFile)
