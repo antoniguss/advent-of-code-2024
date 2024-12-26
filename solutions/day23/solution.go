@@ -107,9 +107,7 @@ func part2(connections map[string]map[string]struct{}) (result string) {
 	}
 
 	for node := range connections {
-		newReq := map[string]struct{}{
-			node: struct{}{},
-		}
+		newReq := map[string]struct{}{node: {}}
 		searchFunc(node, newReq)
 	}
 
