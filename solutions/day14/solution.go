@@ -1,12 +1,13 @@
 package main
 
 import (
-	"advent-of-code-2024/util"
 	"bufio"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/Antyhot/advent-of-code-24/util"
 )
 
 type robot struct {

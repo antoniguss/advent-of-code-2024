@@ -1,10 +1,11 @@
 package main
 
 import (
-	"advent-of-code-2024/util"
 	"bufio"
 	"fmt"
 	"os"
+
+	"github.com/Antyhot/advent-of-code-24/util"
 )
 
 func main() {

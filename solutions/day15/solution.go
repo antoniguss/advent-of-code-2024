@@ -1,10 +1,11 @@
 package main
 
 import (
-	"advent-of-code-2024/util"
 	"bufio"
 	"fmt"
 	"os"
+
+	"github.com/Antyhot/advent-of-code-24/util"
 )
 
 type object struct {
@@ -156,7 +157,7 @@ func part2(objects map[util.Vector]object, instruction []util.Vector, robot obje
 func printObjects(objects map[util.Vector]object, rows, cols int) {
 	for row := range rows {
 		for col := range cols {
-			pos := util.Vector{col, row}
+			pos := util.Vector{X: col, Y: row}
 			object, has := objects[pos]
 			if has {
 				if object.isRobot {

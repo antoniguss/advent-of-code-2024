@@ -1,12 +1,13 @@
 package main
 
 import (
-	"advent-of-code-2024/util"
 	"bufio"
 	"fmt"
 	"os"
 	"regexp"
 	"strconv"
+
+	"github.com/Antyhot/advent-of-code-24/util"
 )
 
 type machine struct {

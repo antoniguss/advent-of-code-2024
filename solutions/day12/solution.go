@@ -1,10 +1,11 @@
 package main
 
 import (
-	"advent-of-code-2024/util"
 	"bufio"
 	"fmt"
 	"os"
+
+	"github.com/Antyhot/advent-of-code-24/util"
 )
 
 func main() {
@@ -32,7 +33,7 @@ func main() {
 	fmt.Printf("Part 1: %d\n", cost1)
 	//--- Part 2 ---
 
-	cost2 := part2(plots, regions)
+	cost2 := part2(regions)
 	fmt.Printf("Part 2: %d\n", cost2)
 	//--- Cleanup ---
 	err = file.Close()
@@ -99,7 +100,7 @@ func part1(plots [][]rune) (regions []map[util.Vector]struct{}, cost int) {
 	return regions, cost
 }
 
-func part2(plots [][]rune, regions []map[util.Vector]struct{}) (cost int) {
+func part2(regions []map[util.Vector]struct{}) (cost int) {
 
 	//---UNUSED IDEAS!---
 	//IDEA: Get bounding box of a region, check rows, columns
